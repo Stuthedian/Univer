@@ -1,0 +1,6 @@
+ifstream input("input.txt");
+	if (!input.is_open()) return 0;
+	OFSTREAM output("output.txt", ios::trunc);
+
+	char a = 0;
+	while (true)

@@ -1,0 +1,339 @@
+Bil 3
+1)
+#include <iostream>
+#include <fstream>
+#include <cctype>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+	const int offset = 'a', latin = 26;
+	int numberofchars = 0;
+	double latinletter[latin] = { 0 }, max = 0;
+	char b = 0;
+	ifstream textfile("textfile.txt");
+	string line;
+	
+
+	if (!textfile.is_open())
+	{
+		cout << "Error opening" << endl;
+		cin.get();
+		return 0;
+	}
+	
+	
+	while (!textfile.eof())
+	{
+		b = textfile.get();
+		(isgraph(b) ? numberofchars++ : 0);
+	}
+	
+	textfile.clear();
+	textfile.seekg(0, textfile.beg);
+	
+	getline(textfile, line);
+
+	for (int i = 0, temp=line.size(); i < temp; i++)
+	{
+		b = line[i];
+		(isalpha(b) && islower(b) ? latinletter[b - offset]++ : 0);
+	}
+		
+
+	for (int i = 0; i < latin; i++)
+	{
+		latinletter[i] = (latinletter[i] / numberofchars) * 100;
+	}
+	
+	for (int i = 0; i < latin; i++)
+	{
+		if (latinletter[i] > max)
+			max = latinletter[i];
+	}
+	 
+	for (int i = 0; i < latin; i++)
+	{
+		if (latinletter[i] == max)
+		{
+			cout << "Letter:" << (char)(offset + i) << "\tPercentage:" << latinletter[i] << "%\n";
+			cin.get();
+			return 0;
+		}
+	}
+	
+	cin.get();
+	return 0;
+}
+2)
+#include <iostream>
+#include <fstream>
+#include <cctype>
+
+using namespace std;
+
+int main()
+{
+	bool notemptyline = false;
+	ifstream textfile("textfile.txt");
+	int buf = 0, linebeg = 0, temp = 0;
+	char b = 0;
+
+	if (!textfile.is_open())
+	{
+		cout << "Error opening" << endl;
+		cin.get();
+		return 0;
+	}
+	
+	while (1)
+	{
+		temp = textfile.tellg();
+		b = textfile.get();
+		if (textfile.eof()) break;
+		if (notemptyline == false && isgraph(b))
+		{
+			notemptyline = true;
+			linebeg = (int)textfile.tellg() - 1;
+		}
+			
+		if (b == '\n')
+		{
+			buf += (notemptyline? /*(int)textfile.tellg()*/(temp + 1) - linebeg:0);
+			notemptyline = false;
+			linebeg = 0;
+		}
+	}
+	if (notemptyline)
+	{
+		buf += temp - linebeg;
+	}
+	//(notemptyline ? numberoflines++ : 0);
+	
+	cout << "Buf  " << buf << endl;
+	cout << numberoflines;
+	
+	cin.get();
+	return 0;
+}
+Bil 7
+1)
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+char* charreplc(char*, int, char);
+
+int main()
+{
+	int n;
+	char s[50] = "Important information about "; 
+	
+
+	char a = cin.get();
+	cin >> n;
+
+	//charreplc(s, n, a);
+
+	cout << charreplc(s, n, a);
+	//cout << s;
+
+	cin.ignore(INT_MAX,'\n');
+	cin.get();
+	return 0;
+}
+
+char * charreplc(char *string, int position, char replacer)
+{
+	char* replcpos = "";
+	if (position >= 0 && (position + 1) <= strlen(string))
+	{
+		replcpos = string + position;
+		for (int i = position, temp = strlen(string); i < temp; i++)
+		{
+			if (isgraph(string[i]))
+				string[i] = replacer;
+		}
+	}
+	return replcpos;
+}
+
+2)
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+	char fam[50];
+	int site, wage, tempsite, numofworker = 0, midwage = 0;
+	ifstream textfile("textfile.txt");
+	if (!textfile.is_open())
+	{
+		cout << "Error opening" << endl;
+		cin.get();
+		return 0;
+	}
+
+	setlocale(LC_ALL, "Russian");
+
+	cin >> tempsite;
+
+	while (true)
+	{
+		if (textfile.eof())
+		{
+			cout << midwage / (numofworker + 0.0) << endl;
+			break;
+		}
+		textfile >> fam >> site >> wage;
+		if (site == tempsite)
+		{
+			cout << fam << endl;
+			numofworker++;
+			midwage += wage;
+		}
+	}
+
+	cin.ignore(INT_MAX, '\n');
+	cin.get();
+	return 0;
+}
+Bil 14
+1)
+#include <iostream>
+
+using namespace std;
+
+char * maxword(char *, int&);
+char * substring(char *, int);
+
+int main()
+{
+	char * s = "holll efds dwarfs";
+	int len;
+
+	cout << maxword(s, len) << endl;
+	cout << len << endl;
+
+	cin.get();
+	return 0;
+}
+
+char * maxword(char * string, int& maxwordlen)
+{
+	bool inword = false;
+	int tempwordlen = 0;
+	char * tempwordptr = 0, *maxwordptr = 0;
+	
+	maxwordlen = -1;
+
+	while (*string != '\0')
+	{
+		if (*string != ' ' && inword == true)
+		{
+			tempwordlen++;
+			//continue;
+		}
+		else if (*string != ' ' && inword == false)
+		{
+			tempwordlen++;
+			tempwordptr = string;
+			inword = true;
+		}
+		else if(*string == ' ' && inword == true)
+		{
+			inword = false;
+			if (tempwordlen >= maxwordlen)
+			{
+				maxwordlen = tempwordlen;
+				delete[] maxwordptr;
+				maxwordptr = substring(tempwordptr, tempwordlen);
+			}
+			tempwordlen = 0;
+			tempwordptr = 0;
+		}
+		string++;
+	}
+	if (tempwordlen >= maxwordlen)
+	{
+		maxwordlen = tempwordlen;
+		delete[] maxwordptr;
+		maxwordptr = substring(tempwordptr, tempwordlen);
+	}
+	return maxwordptr;
+}
+
+char * substring(char * string, int len)
+{
+	char * temp = new char[len+1];
+	for (int i = 0; i < len; i++)
+	{
+		temp[i] = string[i];
+	}
+	temp[len] = '\0';
+	return temp;
+}
+
+2)
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+bool comparestr(char*, char*);
+
+int main()
+{
+	ifstream textfile("textfile.txt");
+	char abonent[50], number[8], query[8];
+
+	if (!textfile.is_open())
+	{
+		cout << "Error opening" << endl;
+		cin.get();
+		return 0;
+	}
+
+	cin >> query;
+		
+	while (true)
+	{
+		textfile >> abonent >> number;
+		if (textfile.eof())
+		{
+			break;
+		}
+			
+		
+		if (comparestr(number, query))
+			cout << abonent << '\t' << number << endl;
+		
+	}
+	
+	
+	cin.ignore(INT_MAX,'\n');
+	cin.get();
+	return 0;
+}
+
+bool comparestr(char *string, char *mask)
+{
+	char buf[50];
+	int len = strlen(mask);
+	while ((*(string + len) != '\0') || (*string != '\0'))
+	{
+		strncpy(buf, string, len);
+		buf[len] = '\0';
+		if (!strcmp(buf, mask))
+			return true;
+		string++;
+	}
+	return false;
+}
